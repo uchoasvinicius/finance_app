@@ -1,69 +1,103 @@
-'use client';
-
 import styled from 'styled-components';
-
-const Container = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem /* 24px */;
-`;
-
-const SkeletonInner = styled.div`
-  padding: 1rem /* 16px */;
-  background-color: rgb(24 24 27 / 0.8);
-  border-radius: 1rem /* 16px */;
-`;
-
-const SkeletonImg = styled.div`
-  height: 3.5rem /* 56px */;
-  border-radius: 0.5rem /* 8px */;
-  background-color: rgb(63 63 70 / 1);
-`;
-
-const SkeletonBtn = styled.div`
-  margin-top: 0.75rem /* 12px */;
-  width: 25%;
-  height: 0.75rem /* 12px */;
-  border-radius: 0.5rem /* 8px */;
-  background-color: rgb(255 0 128 / 1);
-`;
-
-const SkeletonLineOne = styled.div`
-  margin-top: 0.75rem /* 12px */;
-  height: 0.75rem /* 12px */;
-  width: 91.666667%;
-  border-radius: 0.5rem /* 8px */;
-  background-color: rgb(63 63 70 / 1);
-`;
-
-const SkeletonLineTwo = styled.div`
-  margin-top: 0.75rem /* 12px */;
-  height: 0.75rem /* 12px */;
-  width: 66.666667%;
-  border-radius: 0.5rem /* 8px */;
-  background-color: rgb(63 63 70 / 1);
-`;
-
+import {
+  Container,
+  SkeletonBtn,
+  SkeletonImg,
+  SkeletonInner,
+  SkeletonLineOne,
+  SkeletonLineTwo
+} from '@/styles/global';
+import { useState } from 'react';
+import products from '@/memory/transactions.json';
+import Link from 'next/link';
+import { getProducts } from '@/use-cases/get-products';
 const Skeleton = () => (
-    <SkeletonInner>
-      <SkeletonImg />
-      <SkeletonBtn />
-      <SkeletonLineOne />
-      <SkeletonLineTwo />
-    </SkeletonInner>
+  <SkeletonInner>
+    <SkeletonImg />
+    <SkeletonBtn />
+    <SkeletonLineOne />
+    <SkeletonLineTwo />
+  </SkeletonInner>
 );
 
-export default function Page() {
+const Page = async ({
+  searchParams
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page =
+    typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
+  const limit =
+    typeof searchParams.limit === 'string' ? Number(searchParams.limit) : 10;
+
+  // const [after, setAfter] = useState(10)
+  const howMany = () => {
+    const count = {};
+
+    products
+      .map((value) => value.account)
+      .forEach(function (i) {
+        count[i] = (count[i] || 0) + 1;
+      });
+    console.log(count);
+  };
+
+  // const getAll = () => {
+  //   const page_size = 10;
+  //   const page_number = page || 1;
+  //   return Object.values(products).slice(
+  //     (page_number - 1) * page_size,
+  //     page_number * page_size
+  //   );
+  // };
   return (
-      <div className="space-y-4">
-        <h1 className="text-xl font-medium text-gray-400/80">
-          Styled with Styled Components
-        </h1>
-        <Container>
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-        </Container>
-      </div>
+    <div className="space-y-4">
+      <h1 className="text-xl font-medium text-gray-400/80">
+        Styled with Styled Components
+      </h1>
+      {/*{howMany()}*/}
+      <Container>
+        <Skeleton />
+        <Skeleton />
+      </Container>
+      {howMany()}
+      {getProducts({ page_number: page }).map((item, index) => (
+        <p key={index}>{item.amount}</p>
+      ))}
+
+      <p>
+        deposit:{' '}
+        {products.filter((filt) => filt.transaction_type === 'deposit').length}
+      </p>
+      <p>
+        withdraw:{' '}
+        {products.filter((filt) => filt.transaction_type === 'withdraw').length}
+      </p>
+      {/*<button onClick={() => setAfter(after - 10)}>previous</button>*/}
+      <Link
+        href={{
+          pathname: '/',
+          query: {
+            page: page > 1 ? page - 1 : 1
+          }
+        }}
+        className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
+      >
+        Prev
+      </Link>
+      <Link
+        href={{
+          pathname: '/',
+          query: {
+            page: page + 1
+          }
+        }}
+        className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
+      >
+        Next
+      </Link>
+    </div>
   );
-}
+};
+
+export default Page;
