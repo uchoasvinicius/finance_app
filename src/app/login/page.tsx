@@ -55,7 +55,7 @@ export default function LoginComponent() {
       });
       router.push('/dashboard');
     } else {
-      setErrorMessage('E-mail ou senha inválidos.');
+      setErrorMessage('Invalid credentials.');
     }
   };
   return (
@@ -103,7 +103,10 @@ export default function LoginComponent() {
                 placeholder="password"
               />
             </FormControl>
-            <Typography fontSize="sm" sx={{ alignSelf: 'center' }}>
+            <Typography
+              fontSize="sm"
+              sx={{ alignSelf: 'center', color: 'red' }}
+            >
               {errorMessage}
             </Typography>
             <Button type="submit" sx={{ mt: 1 /* margin top */ }}>
