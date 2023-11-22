@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Finance App
 
-First, run the development server:
-
+This is a project that aims to offer a responsive dashboard panel for a list of transactions.
+The key features is the the ability to list transactions in a paginated table with key filters. It is also possible to view graphs that summarize this data.
+## Installation
+Clone this repo
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install && npm run dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
+The project is built on top of Next 14 and takes advantage of all embedded technology, such as Server Functions and Server Components, with some SOLID priciples, Clean Code and Typescript
+- Next 14
+- Typescript
+- MUI + Joy
+- Google Charts
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Structure
+The Project consists of 3 main pages: Login, Dashboard and Charts. If the user is not logged in, he will be automatically redirected to login. The session is persisted through a "token" cookie (which stores name and email, both encoded), and simulates a JWT. If the token does not exist, it is automatically redirected via Middleware. It's a simple local approach, but it's the foundation of any web authentication and can be expanded any time soon. Additionally, filters are persisted via URL.
+\
+There are some helpers that 
+## Caveats
+The project doesn't have tests (yet), but was built on the SOLID acronym S, single responsibility, to separate the presentation layer from the model business layer. This makes testing easier and more reliable in the future.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

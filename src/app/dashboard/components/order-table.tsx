@@ -18,13 +18,8 @@ import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import Table from '@mui/joy/Table';
 import Sheet from '@mui/joy/Sheet';
-import Checkbox from '@mui/joy/Checkbox';
 import IconButton, { iconButtonClasses } from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
-import Menu from '@mui/joy/Menu';
-import MenuButton from '@mui/joy/MenuButton';
-import MenuItem from '@mui/joy/MenuItem';
-import Dropdown from '@mui/joy/Dropdown';
 // icons
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
@@ -32,54 +27,10 @@ import ArrowCircleUp from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleDown from '@mui/icons-material/ArrowCircleDown';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { getProducts } from '@/use-cases/get-products';
-import { getCurrencyFullName } from '@/helpers/currency';
-import { getFilterList } from '@/use-cases/filterProducts';
+import { getFilterList } from '@/use-cases/filter-products';
 import { getStateFullName } from '@/utils/get-states';
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
-function stableSort<T>(
-  array: readonly T[],
-  comparator: (a: T, b: T) => number
-) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+import { formatCurrency } from '@/utils/money-convert';
+import { Products } from '@/types/products';
 
 const generateLetters = (name: string) => {
   return name
@@ -88,29 +39,9 @@ const generateLetters = (name: string) => {
     .slice(0, 2);
 };
 
-function RowMenu() {
-  return (
-    <Dropdown>
-      <MenuButton
-        slots={{ root: IconButton }}
-        slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
-      >
-        <MoreHorizRoundedIcon />
-      </MenuButton>
-      <Menu size="sm" sx={{ minWidth: 140 }}>
-        <MenuItem>Edit</MenuItem>
-        <MenuItem>Rename</MenuItem>
-        <MenuItem>Move</MenuItem>
-        <Divider />
-        <MenuItem color="danger">Delete</MenuItem>
-      </Menu>
-    </Dropdown>
-  );
-}
-
-const convertDate = (date: string) => {
+const convertDate = (date: number) => {
   const myDate = new Date(date);
-  return (
+  const formatDate =
     myDate.getDate() +
     '/' +
     myDate.toLocaleString('en-us', {
@@ -119,53 +50,147 @@ const convertDate = (date: string) => {
     '/' +
     myDate.getFullYear() +
     ' ' +
-    myDate.getHours() +
+    String(myDate.getHours()).padStart(2, '0') + // Ensure two digits for hours
     ':' +
-    myDate.getMinutes()
-  );
+    String(myDate.getMinutes()).padStart(2, '0'); // Ensure two digits for minutes
+
+  return formatDate;
 };
 
-export default function OrderTable({ page, rows }) {
-  const [order, setOrder] = React.useState<Order>('desc');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+interface OrderTable {
+  page: number;
+  rows: Products[];
+  filters?: {
+    search?: string;
+    account?: string;
+    state?: string;
+    transaction_type?: string;
+    industry?: string;
+  };
+  query: any;
+}
+
+export default function OrderTable({ page, rows, query }: OrderTable) {
+  // const [order, setOrder] = React.useState<Order>('desc');
+  // const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
   const renderFilters = () => (
     <React.Fragment>
       <FormControl size="sm">
-        <FormLabel>Status</FormLabel>
+        <FormLabel>Transaction</FormLabel>
         <Select
+          defaultValue={query?.transaction_type}
           size="sm"
           placeholder="Filter by status"
           slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
         >
           {getFilterList('transaction_type').map((value) => (
-            <Option key={value} value="all">
-              {value}
-            </Option>
+            <Link
+              key={value}
+              passHref
+              prefetch={false}
+              href={{
+                pathname: '/dashboard',
+                query: {
+                  ...query,
+                  page: 1,
+                  transaction_type: value
+                }
+              }}
+              className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
+            >
+              <Option value={value}>{value}</Option>
+            </Link>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="sm">
+        <FormLabel>Industry</FormLabel>
+        <Select size="sm" placeholder="All" defaultValue={query?.industry}>
+          {getFilterList('industry').map((value) => (
+            <Link
+              key={value}
+              passHref
+              prefetch={false}
+              href={{
+                pathname: '/dashboard',
+                query: {
+                  ...query,
+                  page: 1,
+                  industry: value
+                }
+              }}
+              className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
+            >
+              <Option value={value}>{value}</Option>
+            </Link>
           ))}
         </Select>
       </FormControl>
 
       <FormControl size="sm">
         <FormLabel>Accounts</FormLabel>
-        <Select size="sm" placeholder="All">
+        <Select size="sm" placeholder="All" defaultValue={query?.account}>
           {getFilterList('account').map((value) => (
-            <Option key={value} value="all">
-              {value}
-            </Option>
+            <Link
+              key={value}
+              passHref
+              prefetch={false}
+              href={{
+                pathname: '/dashboard',
+                query: {
+                  ...query,
+                  page: 1,
+                  account: value
+                }
+              }}
+              className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
+            >
+              <Option value={value}>{value}</Option>
+            </Link>
           ))}
         </Select>
       </FormControl>
 
       <FormControl size="sm">
         <FormLabel>State</FormLabel>
-        <Select size="sm" placeholder="All">
+        <Select size="sm" placeholder="All" defaultValue={query?.state}>
           {getFilterList('state').map((value) => (
-            <Option key={value} value="all">
-              {getStateFullName(value)}
-            </Option>
+            <Link
+              key={value}
+              passHref
+              prefetch={false}
+              href={{
+                pathname: '/dashboard',
+                query: {
+                  ...query,
+                  page: 1,
+                  state: value
+                }
+              }}
+              className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
+            >
+              <Option value={value}>{getStateFullName(value)}</Option>
+            </Link>
           ))}
         </Select>
+      </FormControl>
+      <FormControl size="sm">
+        <FormLabel> </FormLabel>
+        <Link
+          passHref
+          href={{
+            pathname: '/dashboard',
+            query: {
+              page: 1
+            }
+          }}
+        >
+          <Button sx={{ mt: '1rem' }} variant="plain">
+            Clean filters
+          </Button>
+        </Link>
       </FormControl>
     </React.Fragment>
   );
@@ -231,16 +256,17 @@ export default function OrderTable({ page, rows }) {
           }
         }}
       >
-        <FormControl sx={{ flex: 1 }} size="sm">
-          <FormLabel>Search for order</FormLabel>
-          <Input
-            size="sm"
-            placeholder="Search"
-            startDecorator={<SearchIcon />}
-          />
-        </FormControl>
+        {/*<FormControl sx={{ flex: 1 }} size="sm">*/}
+        {/*  <FormLabel>Search for order</FormLabel>*/}
+        {/*  <Input*/}
+        {/*    size="sm"*/}
+        {/*    placeholder="Search"*/}
+        {/*    startDecorator={<SearchIcon />}*/}
+        {/*  />*/}
+        {/*</FormControl>*/}
         {renderFilters()}
       </Box>
+
       <Sheet
         className="OrderTableContainer"
         variant="outlined"
@@ -269,114 +295,86 @@ export default function OrderTable({ page, rows }) {
         >
           <thead>
             <tr>
-              {/*<th*/}
-              {/*  style={{ width: 48, textAlign: 'center', padding: '12px 6px' }}*/}
-              {/*>*/}
-              {/*  <Checkbox*/}
-              {/*    size="sm"*/}
-              {/*    indeterminate={*/}
-              {/*      selected.length > 0 && selected.length !== rows.length*/}
-              {/*    }*/}
-              {/*    checked={selected.length === rows.length}*/}
-              {/*    onChange={(event) => {*/}
-              {/*      setSelected(*/}
-              {/*        event.target.checked ? rows.map((row) => row.id) : []*/}
-              {/*      );*/}
-              {/*    }}*/}
-              {/*    color={*/}
-              {/*      selected.length > 0 || selected.length === rows.length*/}
-              {/*        ? 'primary'*/}
-              {/*        : undefined*/}
-              {/*    }*/}
-              {/*    sx={{ verticalAlign: 'text-bottom' }}*/}
-              {/*  />*/}
-              {/*</th>*/}
-              {/*<th style={{ width: 120, padding: '12px 6px' }}>*/}
-              {/*  <Link*/}
-              {/*    underline="none"*/}
-              {/*    color="primary"*/}
-              {/*    component="button"*/}
-              {/*    onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}*/}
-              {/*    fontWeight="lg"*/}
-              {/*    endDecorator={<ArrowDropDownIcon />}*/}
-              {/*    sx={{*/}
-              {/*      '& svg': {*/}
-              {/*        transition: '0.2s',*/}
-              {/*        transform:*/}
-              {/*          order === 'desc' ? 'rotate(0deg)' : 'rotate(180deg)'*/}
-              {/*      }*/}
-              {/*    }}*/}
-              {/*  >*/}
-              {/*    Invoice*/}
-              {/*  </Link>*/}
-              {/*</th>*/}
-
               <th style={{ width: 35, padding: '12px 6px' }}>Client</th>
               <th style={{ width: 140, padding: '12px 6px' }}></th>
               <th style={{ width: 60, padding: '12px 6px' }}>Amount</th>
               <th style={{ width: 140, padding: '12px 6px' }}>Industry</th>
               <th style={{ width: 140, padding: '12px 6px' }}>Date</th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Currency</th>
               <th style={{ width: 140, padding: '12px 6px' }}>Transaction</th>
               <th style={{ width: 140, padding: '12px 6px' }}>State</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.account}>
-                <td>
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Avatar size="sm">{generateLetters(row.account)}</Avatar>
-                  </Box>
-                </td>
-                <td>
-                  <Typography level="body-xs">{row.account}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{row.amount}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{row.industry}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">
-                    {convertDate(row.date)}
-                  </Typography>
-                </td>
-
-                <td>
-                  <Typography level="body-xs">
-                    {getCurrencyFullName(row.currency)}
-                  </Typography>
-                </td>
-
-                <td>
-                  <Chip
-                    variant="soft"
-                    size="sm"
-                    startDecorator={
-                      {
-                        deposit: <ArrowCircleDown />,
-                        withdraw: <ArrowCircleUp />
-                      }[row.transaction_type]
-                    }
-                    color={
-                      {
-                        deposit: 'success',
-                        withdraw: 'neutral'
-                      }[row.transaction_type] as ColorPaletteProp
-                    }
-                  >
-                    {row.transaction_type}
-                  </Chip>
-                </td>
-                <td>
-                  <Typography level="body-xs">
-                    {getStateFullName(row.state)}
+            {!rows.length ? (
+              <tr>
+                <td colSpan={7}>
+                  <Typography align="center">
+                    No transactions that matches your query
                   </Typography>
                 </td>
               </tr>
-            ))}
+            ) : (
+              <>
+                {rows.map((row: Products) => (
+                  <tr key={row.date}>
+                    <td>
+                      <Box
+                        sx={{ display: 'flex', gap: 2, alignItems: 'center' }}
+                      >
+                        <Avatar size="sm">
+                          {generateLetters(row.account)}
+                        </Avatar>
+                      </Box>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{row.account}</Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">
+                        {formatCurrency({
+                          value: row.amount,
+                          currency: row.currency
+                        })}
+                      </Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{row.industry}</Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">
+                        {convertDate(row.date)}
+                      </Typography>
+                    </td>
+
+                    <td>
+                      <Chip
+                        variant="soft"
+                        size="sm"
+                        startDecorator={
+                          {
+                            deposit: <ArrowCircleDown />,
+                            withdraw: <ArrowCircleUp />
+                          }[row.transaction_type]
+                        }
+                        color={
+                          {
+                            deposit: 'success',
+                            withdraw: 'neutral'
+                          }[row.transaction_type] as ColorPaletteProp
+                        }
+                      >
+                        {row.transaction_type}
+                      </Chip>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">
+                        {getStateFullName(row.state)}
+                      </Typography>
+                    </td>
+                  </tr>
+                ))}
+              </>
+            )}
           </tbody>
         </Table>
       </Sheet>
@@ -394,8 +392,9 @@ export default function OrderTable({ page, rows }) {
       >
         <Link
           href={{
-            pathname: '/',
+            pathname: '/dashboard',
             query: {
+              ...query,
               page: page > 1 ? page - 1 : 1
             }
           }}
@@ -426,6 +425,7 @@ export default function OrderTable({ page, rows }) {
           href={{
             pathname: '/dashboard',
             query: {
+              ...query,
               page: page + 1
             }
           }}

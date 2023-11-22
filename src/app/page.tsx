@@ -52,50 +52,50 @@ const Page = async ({
   // };
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-medium text-gray-400/80">
-        Styled with Styled Components
-      </h1>
+      {/*<h1 className="text-xl font-medium text-gray-400/80">*/}
+      {/*  Styled with Styled Components*/}
+      {/*</h1>*/}
+      {/*/!*{howMany()}*!/*/}
+      {/*<Container>*/}
+      {/*  <Skeleton />*/}
+      {/*  <Skeleton />*/}
+      {/*</Container>*/}
       {/*{howMany()}*/}
-      <Container>
-        <Skeleton />
-        <Skeleton />
-      </Container>
-      {howMany()}
-      {getProducts({ page_number: page }).map((item, index) => (
-        <p key={index}>{item.amount}</p>
-      ))}
+      {/*{getProducts({ page_number: page }).map((item, index) => (*/}
+      {/*  <p key={index}>{item.amount}</p>*/}
+      {/*))}*/}
 
-      <p>
-        deposit:{' '}
-        {products.filter((filt) => filt.transaction_type === 'deposit').length}
-      </p>
-      <p>
-        withdraw:{' '}
-        {products.filter((filt) => filt.transaction_type === 'withdraw').length}
-      </p>
-      {/*<button onClick={() => setAfter(after - 10)}>previous</button>*/}
-      <Link
-        href={{
-          pathname: '/',
-          query: {
-            page: page > 1 ? page - 1 : 1
-          }
-        }}
-        className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
-      >
-        Prev
-      </Link>
-      <Link
-        href={{
-          pathname: '/',
-          query: {
-            page: page + 1
-          }
-        }}
-        className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"
-      >
-        Next
-      </Link>
+      {/*<p>*/}
+      {/*  deposit:{' '}*/}
+      {/*  {products.filter((filt) => filt.transaction_type === 'deposit').length}*/}
+      {/*</p>*/}
+      {/*<p>*/}
+      {/*  withdraw:{' '}*/}
+      {/*  {products.filter((filt) => filt.transaction_type === 'withdraw').length}*/}
+      {/*</p>*/}
+      {/*/!*<button onClick={() => setAfter(after - 10)}>previous</button>*!/*/}
+      {/*<Link*/}
+      {/*  href={{*/}
+      {/*    pathname: '/',*/}
+      {/*    query: {*/}
+      {/*      page: page > 1 ? page - 1 : 1*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"*/}
+      {/*>*/}
+      {/*  Prev*/}
+      {/*</Link>*/}
+      {/*<Link*/}
+      {/*  href={{*/}
+      {/*    pathname: '/',*/}
+      {/*    query: {*/}
+      {/*      page: page + 1*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  className="rounded border bg-gray-100 px-3 py-1 text-sm text-gray-800"*/}
+      {/*>*/}
+      {/*  Next*/}
+      {/*</Link>*/}
     </div>
   );
 };

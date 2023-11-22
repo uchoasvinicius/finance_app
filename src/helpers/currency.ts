@@ -2,9 +2,9 @@ type CurrencyMap = { [key: string]: string };
 
 export function getCurrencyFullName(acronym: string): string | undefined {
   const currencyMap: CurrencyMap = {
-    USD: 'United States Dollar',
-    EUR: 'Euro',
-    BRL: 'Brazilian Real'
+    USD: '$',
+    EUR: '€',
+    BRL: 'R$'
     // Add more currencies as needed
   };
 
