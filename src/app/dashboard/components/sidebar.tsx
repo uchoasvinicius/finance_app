@@ -5,61 +5,23 @@ import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
 import Divider from '@mui/joy/Divider';
 import IconButton from '@mui/joy/IconButton';
-import Input from '@mui/joy/Input';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton, { listItemButtonClasses } from '@mui/joy/ListItemButton';
 import ListItemContent from '@mui/joy/ListItemContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
 
-import ColorSchemeToggle from './color-scheme';
 import { closeSidebar } from './utils';
 import React from 'react';
 import { deleteCookie, getCookie } from 'cookies-next';
 import { useRouter, usePathname } from 'next/navigation';
-import Button from '@mui/joy/Button';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Link from 'next/link';
-
-function Toggler({
-  defaultExpanded = false,
-  renderToggle,
-  children
-}: {
-  defaultExpanded?: boolean;
-  children: React.ReactNode;
-  renderToggle: (params: {
-    open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => React.ReactNode;
-}) {
-  const [open, setOpen] = React.useState(defaultExpanded);
-
-  return (
-    <React.Fragment>
-      {renderToggle({ open, setOpen })}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateRows: open ? '1fr' : '0fr',
-          transition: '0.2s ease',
-          '& > *': {
-            overflow: 'hidden'
-          }
-        }}
-      >
-        {children}
-      </Box>
-    </React.Fragment>
-  );
-}
 
 export default function Sidebar() {
   const token = getCookie('token') || '';
@@ -203,12 +165,18 @@ export default function Sidebar() {
             mb: 2
           }}
         >
-          <ListItem>
-            <ListItemButton>
-              <SupportRoundedIcon />
-              Support
-            </ListItemButton>
-          </ListItem>
+          <Link
+            passHref
+            legacyBehavior
+            href="https://github.com/uchoasvinicius/finance_app"
+          >
+            <ListItem>
+              <ListItemButton>
+                <SupportRoundedIcon />
+                Support
+              </ListItemButton>
+            </ListItem>
+          </Link>
         </List>
       </Box>
       <Divider />

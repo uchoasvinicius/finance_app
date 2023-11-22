@@ -1,12 +1,9 @@
 'use client';
 import React from 'react';
 import { Chart } from 'react-google-charts';
-import products from '@/memory/transactions.json';
 import { GetTransactionsAmount } from '@/use-cases/charts/get-transactions-amount';
 import { GetIndustriesAmount } from '@/use-cases/charts/get-industries-amount';
-import { Products } from '@/types/products';
 import Box from '@mui/joy/Box';
-const listTransactions: Products[] = products;
 
 const Page = () => {
   const transactionsChart = GetTransactionsAmount();

@@ -1,16 +1,9 @@
-import { CssVarsProvider } from '@mui/joy/styles';
-import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
-import Breadcrumbs from '@mui/joy/Breadcrumbs';
-import Link from '@mui/joy/Link';
+
 import Typography from '@mui/joy/Typography';
-// icons
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import Sidebar from './components/sidebar';
+
 import OrderTable from './components/order-table';
 import OrderList from './components/order-list';
-import Header from './components/header';
 import React from 'react';
 import HeroCard from '@/app/dashboard/components/hero-card';
 import { getProducts } from '@/use-cases/get-products';
@@ -18,7 +11,6 @@ import { sumAmountValues } from '@/use-cases/cards-filter';
 import { formatCurrency } from '@/utils/money-convert';
 import ArrowCircleDown from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUp from '@mui/icons-material/ArrowCircleUp';
-import GraphArea from '@/app/dashboard/components/graph-area';
 
 const Page = async ({
   searchParams

@@ -58,7 +58,7 @@ export function getStateFullName(acronym: string): string | undefined {
   const upperCaseAcronym = acronym.toUpperCase();
 
   // Check if the provided acronym exists in the map
-  if (stateMap.hasOwnProperty(upperCaseAcronym)) {
+  if (Object.prototype.hasOwnProperty.call(stateMap, upperCaseAcronym)) {
     return stateMap[upperCaseAcronym];
   } else {
     // Return undefined for unsupported or unknown acronyms

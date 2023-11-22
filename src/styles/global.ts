@@ -1,5 +1,5 @@
 'use client';
-import styled, { createGlobalStyle, css } from 'styled-components'
+import styled, { createGlobalStyle, css } from 'styled-components';
 
 const styles = css`
   // your global styles

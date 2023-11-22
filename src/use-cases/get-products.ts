@@ -12,14 +12,6 @@ interface GetProducts {
   };
 }
 
-const isObjectEmpty = (objectName: any) => {
-  return (
-    objectName &&
-    Object.keys(objectName).length === 0 &&
-    objectName.constructor === Object
-  );
-};
-
 const page_size = 10; // Limit for pagination
 export const getProducts = ({
   page_number,

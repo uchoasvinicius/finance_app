@@ -1,11 +1,7 @@
 import * as React from 'react';
-import Button from '@mui/joy/Button';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
-import Favorite from '@mui/icons-material/Favorite';
-import { Money } from '@mui/icons-material';
 import Typography from '@mui/joy/Typography';
-import SvgIcon from '@mui/joy/SvgIcon';
 import { ReactElement } from 'react';
 
 interface Card {

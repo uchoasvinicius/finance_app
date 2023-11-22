@@ -12,7 +12,6 @@ import Typography from '@mui/joy/Typography';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import Button from '@mui/joy/Button';
-import Link from '@mui/joy/Link';
 const schema = z.object({
   email: z.string().email('Insira um e-mail válido'),
   password: z.string().nonempty('Insira uma senha válida')
@@ -104,7 +103,9 @@ export default function LoginComponent() {
                 placeholder="password"
               />
             </FormControl>
-
+            <Typography fontSize="sm" sx={{ alignSelf: 'center' }}>
+              {errorMessage}
+            </Typography>
             <Button type="submit" sx={{ mt: 1 /* margin top */ }}>
               Log in
             </Button>
