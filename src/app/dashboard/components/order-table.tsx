@@ -308,7 +308,7 @@ export default function OrderTable({ page, rows, query }: OrderTable) {
             {!rows.length ? (
               <tr>
                 <td colSpan={7}>
-                  <Typography align="center">
+                  <Typography textAlign="center">
                     No transactions that matches your query
                   </Typography>
                 </td>
